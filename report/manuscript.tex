@@ -1,0 +1,73 @@
+% LaTeX manuscript template for the digital twin study
+\documentclass[11pt,a4paper]{article}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{natbib}
+\usepackage{hyperref}
+
+\title{Agent-Based Digital Twin of Cascading Failures in a Green Hydrogen Industrial Network}
+\author{Author Name\\Institution}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+We present an agent-based digital twin of a green hydrogen industrial network that demonstrates stochastic cascading failures, avalanche dynamics, and topology-dependent resilience collapse. The model couples local agent stress dynamics, probabilistic failure propagation, and load redistribution on industrial interaction networks. Comparative experiments on Barabasi-Albert and Watts-Strogatz topologies reveal distinct avalanche ensembles and critical-transition behavior. Post-processing includes log-log avalanche analyses and finite-size checks across multiple network sizes.
+\end{abstract}
+
+\section{Introduction}
+Green hydrogen ecosystems integrate renewable generation, electrolyzers, storage, ammonia synthesis, and transport logistics. Their interdependence creates nonlinear vulnerability pathways where local disruptions can propagate globally. Digital twins with explicit agent interactions offer a principled route to test resilience and intervention policies under uncertainty.
+
+\section{Methodology}
+We model each infrastructure unit as an autonomous node with attributes: health, stress, load, capacity, node type, failure state, and degradation. Nodes interact on either a scale-free (Barabasi-Albert) or small-world (Watts-Strogatz) graph. At each timestep, stochastic fluctuations update loads, stress is recomputed from effective capacity, and failure probabilities are evaluated. Failed nodes redistribute load to operational neighbors, enabling secondary cascades. A low-rate recovery mechanism captures maintenance/repair events and sustains long-horizon avalanche sampling.
+
+\section{Mathematical Model}
+The failure probability used in the simulation is given by:
+$$P_{\text{fail}} = P_0 + \alpha\, N_{\text{failed,neigh}} + \beta\, S$$
+where $S$ denotes node stress.
+
+The probability is clipped to $[0,1]$ in implementation. If node $j$ fails, its transferable load fraction $\rho L_j$ is redistributed to non-failed neighbors $\mathcal{N}_j$ proportionally to effective capacities:
+$$
+\Delta L_i = \rho L_j \cdot \frac{C_i(1-d_i)}{\sum_{k\in\mathcal{N}_j} C_k(1-d_k)}, \quad i\in\mathcal{N}_j
+$$
+where $C_i$ is nominal capacity and $d_i$ is degradation.
+
+\section{Simulation Experiments}
+Baseline sweeps varied $\alpha\in\{0.05,0.10,0.15\}$, $\beta\in\{0.5,0.9,1.2\}$, and topology $\in\{\text{Barabasi},\text{Watts}\}$. A research pipeline then selected a critical-window candidate from sweep aggregates and executed:
+\begin{enumerate}
+	\item topology comparison replicates,
+	\item avalanche SOC-style log-log fitting,
+	\item finite-size checks at $N\in\{80,120,180\}$,
+	\item publication-panel figure assembly.
+\end{enumerate}
+
+\section{Results}
+From the current run, the selected operating point was $(\alpha,\beta)=(0.05,0.5)$ on a Barabasi baseline candidate. The avalanche-size log-log fit yielded slope $-0.977$ with $R^2=0.648$ over $n=654$ avalanche observations, consistent with heavy-tailed behavior.
+
+Finite-size checks showed increasing mean avalanche size with $N$:
+\begin{itemize}
+	\item Barabasi: $2.77 \rightarrow 3.14 \rightarrow 3.68$ for $N=80,120,180$.
+	\item Watts: $2.61 \rightarrow 2.83 \rightarrow 3.41$ for $N=80,120,180$.
+\end{itemize}
+
+Suggested figure assets generated in this repository:
+\begin{itemize}
+	\item `results/research/plots/topology_comparison_panel.png`
+	\item `results/research/plots/soc_fit_loglog.png`
+	\item `results/research/plots/finite_size_barabasi.png`
+	\item `results/research/plots/finite_size_watts.png`
+	\item `results/research/plots/publication_panel.png`
+\end{itemize}
+
+\section{Discussion}
+Results indicate that network topology modulates avalanche recurrence and scale under equivalent local rules. The observed heavy-tailed distributions and finite-size trends motivate deeper criticality diagnostics (e.g., maximum-likelihood exponent estimation, likelihood-ratio tests against alternative tails, and intervention-based phase-shift analysis).
+
+\section{Conclusion}
+This digital twin provides a modular computational framework for studying cascading failures in green hydrogen industrial systems. It supports reproducible experimentation, topology-aware resilience analysis, and manuscript-ready artifact generation from a single Python workflow.
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}

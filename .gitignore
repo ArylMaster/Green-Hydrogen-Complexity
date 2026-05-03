@@ -1,0 +1,19 @@
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+.venv/
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+
+# Build/test outputs
+.pytest_cache/
+.mypy_cache/
+
+# Large generated simulation outputs (can be regenerated)
+results/
+green_results/
