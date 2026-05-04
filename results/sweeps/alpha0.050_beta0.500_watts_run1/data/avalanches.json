@@ -1,0 +1,327 @@
+[
+  {
+    "time": 1,
+    "size": 120,
+    "duration": 8
+  },
+  {
+    "time": 3,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 4,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 7,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 8,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 9,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 10,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 11,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 15,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 17,
+    "size": 3,
+    "duration": 2
+  },
+  {
+    "time": 19,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 20,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 23,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 24,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 25,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 26,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 27,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 28,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 30,
+    "size": 4,
+    "duration": 1
+  },
+  {
+    "time": 35,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 36,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 38,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 42,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 44,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 45,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 46,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 48,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 49,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 50,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 51,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 54,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 57,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 58,
+    "size": 3,
+    "duration": 1
+  },
+  {
+    "time": 59,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 61,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 63,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 65,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 66,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 68,
+    "size": 4,
+    "duration": 2
+  },
+  {
+    "time": 69,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 70,
+    "size": 3,
+    "duration": 1
+  },
+  {
+    "time": 71,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 74,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 76,
+    "size": 4,
+    "duration": 2
+  },
+  {
+    "time": 80,
+    "size": 2,
+    "duration": 2
+  },
+  {
+    "time": 81,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 82,
+    "size": 4,
+    "duration": 2
+  },
+  {
+    "time": 84,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 87,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 88,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 90,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 94,
+    "size": 3,
+    "duration": 1
+  },
+  {
+    "time": 95,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 98,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 101,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 102,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 108,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 109,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 110,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 111,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 112,
+    "size": 3,
+    "duration": 1
+  },
+  {
+    "time": 113,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 114,
+    "size": 1,
+    "duration": 1
+  },
+  {
+    "time": 119,
+    "size": 2,
+    "duration": 1
+  },
+  {
+    "time": 120,
+    "size": 1,
+    "duration": 1
+  }
+]

@@ -194,25 +194,13 @@ This report is organized as follows:
 
 Cascading failures have been extensively studied in the context of electrical power grids. Buldyrev et al.\ (2010) demonstrated how interdependent networks are more vulnerable to cascades than isolated networks. Holmgren (2006) studied cascade sequence in power systems, showing that load redistribution after line failures can trigger avalanches of outages.
 
-The fundamental mechanism is:
-\begin{enumerate}
-\item Initial failure(s) remove a node or edge from the network.
-\item Load/demand previously handled by the failed component is redistributed to neighbors.
-\item Increased stress on neighboring components may exceed their capacity, causing secondary failures.
-\item Cascade continues until reaching equilibrium (all failed components are removed or system recovers).
-\end{enumerate}
+The fundamental mechanism of cascading failures unfolds through a sequence of coupled dynamics. An initial failure---exogenous or triggered by excessive stress---removes a node or edge from the network. The load or demand previously handled by the failed component must be redistributed to neighboring components to maintain system integrity. This increased stress on neighboring components may exceed their structural or operational capacity, triggering secondary failures. This process propagates iteratively through the network until the cascade terminates, either through removal of all failed components or through system recovery mechanisms that restore functionality.
 
 \section{Self-Organized Criticality (SOC)}
 
 Self-organized criticality, introduced by Bak, Tang, and Wiesenfeld (1987), describes systems that evolve naturally toward a critical point without fine-tuning. At criticality, small perturbations trigger avalanches of all sizes, producing power-law-distributed cascade statistics.
 
-Hallmarks of SOC systems:
-\begin{itemize}
-\item Power-law avalanche-size distributions: $P(s) \sim s^{-\tau}$ with $1.5 \lesssim \tau \lesssim 2.5$.
-\item Self-similar structure across scales (fractals).
-\item Sandpile-like dynamics: slow forcing + rapid relaxation.
-\item No characteristic scale (scale-free behavior).
-\end{itemize}
+Self-organized critical systems exhibit several defining characteristics. Power-law avalanche-size distributions arise naturally, typically following $P(s) \sim s^{-\tau}$ with exponent $1.5 \lesssim \tau \lesssim 2.5$. These systems exhibit self-similar structure across multiple scales, reflecting fractal-like organization. Dynamics follow a sandpile-like paradigm: slow, continuous forcing gradually builds stress until rapid relaxation events (avalanches) dissipate accumulated stress. Most remarkably, the absence of a characteristic length or time scale---a hallmark of scale-free behavior---allows small perturbations to trigger cascades spanning many orders of magnitude.
 
 Power grids, earthquakes, and forest fires show SOC-like signatures, motivating investigation of same phenomena in hydrogen networks.
 
@@ -221,31 +209,16 @@ Power grids, earthquakes, and forest fires show SOC-like signatures, motivating 
 The structure of interaction networks profoundly affects cascade propagation:
 
 \subsection{Barab\'asi-Albert Scale-Free Networks}
-\begin{itemize}
-\item Preferential attachment: emerging nodes connect preferentially to high-degree hubs.
-\item Degree distribution: $P(k) \sim k^{-3}$ (heavy-tailed).
-\item Resilience: removal of random nodes has limited impact (robust), but hub removal catastrophic (fragile).
-\item Realistic for infrastructure: pipelines, power grids, airline networks often exhibit scale-free topology.
-\end{itemize}
+
+Barab\'asi-Albert networks are generated via preferential attachment: emerging nodes connect preferentially to high-degree hubs, creating a power-law degree distribution $P(k) \sim k^{-3}$. These networks exhibit an asymmetric resilience profile: removal of random nodes typically has limited impact on network connectivity (robust-to-random-failure), but targeted removal of hubs causes catastrophic fragmentation (fragile-to-targeted-attack). Scale-free topologies realistically describe many observed infrastructure networks including pipelines, electrical power grids, and airline networks, making them a natural choice for modeling hydrogen distribution systems.
 
 \subsection{Watts-Strogatz Small-World Networks}
-\begin{itemize}
-\item Interpolates between regular lattices and random graphs via rewiring probability $p$.
-\item Combines local clustering (triadic closure) with global shortcut paths.
-\item High clustering + short path lengths = efficient signal propagation.
-\item Often observed in biological and social networks.
-\end{itemize}
+
+Watts-Strogatz networks are constructed via random rewiring of regular lattices, controlled by rewiring probability $p$. This construction yields networks that combine both local clustering (triadic closure characteristic of lattices) and global shortcut paths (characteristic of random graphs). The resulting topology exhibits high clustering coefficients---reflecting local neighborhood correlation---coupled with short average path lengths, enabling efficient signal and load propagation across the network. Small-world architectures are frequently observed in biological networks (neural systems, protein interaction networks) and social systems (collaboration networks), inspiring researchers to investigate whether similar organization emerges in engineered infrastructure systems.
 
 \section{Green Hydrogen Systems and Interdependencies}
 
-Green hydrogen infrastructure is inherently interdependent:
-\begin{itemize}
-\item Renewables: variable, uncontrollable generation.
-\item Electrolyzers: high capital cost, rapid ramp-down under low power, produce hydrogen on-demand.
-\item Storage: hydrogen tanks or geological caverns provide buffering but have finite capacity and maintenance cycles.
-\item Synthesis: ammonia plants, methanol production, etc.\ demand stable hydrogen supply and generate revenue.
-\item Pipeline hubs: spatially distributed, transport commodity between production and consumption points.
-\end{itemize}
+Green hydrogen infrastructure exhibits inherent interdependence across multiple functional components. Renewable energy generation (wind, solar) provides primary energy but is variable and uncontrollable, introducing supply uncertainty. Electrolyzers convert this electrical power to hydrogen, operating on-demand with high capital costs and rapid ramp-down during low-power periods. Storage facilities---hydrogen tanks or underground geological caverns---provide temporal buffering to smooth supply-demand mismatches but face finite capacity constraints and maintenance cycles. Downstream synthesis processes (ammonia production, methanol synthesis, fuel-cell power generation) demand stable hydrogen supply and generate revenue through commodity conversion. Finally, spatially-distributed pipeline hubs form the transport backbone, connecting production and consumption nodes across geographic regions. This tightly-coupled system of interdependent components creates complex failure propagation pathways.
 
 Recent work (e.g., Karan et al.\ 2021, Palomares-S\'aenz et al.\ 2022) has shown that hydrogen infrastructure faces similar cascading-failure risks as energy grids, yet receives less attention in resilience analysis.
 
@@ -322,19 +295,7 @@ where:
 
 \section{Cascading Failure Algorithm}
 
-The simulation executes the following at each timestep $t$:
-
-\begin{enumerate}
-\item \textbf{Update loads:} For generation nodes, sample renewable output. For consumption/process nodes, sample demand.
-\item \textbf{Compute stress:} Update $S_i(t)$ and degradation $d_i(t)$ for all non-failed nodes.
-\item \textbf{Probabilistic failures:} For each non-failed node, sample $P_{\text{fail},i}$; any node with $\text{random}() < P_{\text{fail},i}$ enters the cascade queue.
-\item \textbf{Cascade loop:} Iteratively process failed nodes from the queue:
-   \begin{enumerate}
-   \item Mark node as failed, transfer load to neighbors.
-   \item Re-evaluate failure probabilities for neighbors (secondary failures).
-   \item Continue until no new failures occur (cascade terminates).
-   \end{enumerate}
-\item \textbf{Recovery:} With probability $p_{\text{rec}} = 0.007$, each failed node repairs and re-enters service.
+The simulation executes a multi-phase algorithm at each timestep $t$. First, loads are updated: generation nodes sample renewable output, while consumption and process nodes sample demand from their respective stochastic distributions. Next, stress is recomputed for all non-failed nodes using the updated load and effective capacity, and component degradation is updated according to Eq.\ (4). For each non-failed node, the failure probability $P_{\text{fail},i}$ is evaluated using Eq.\ (1), and any node with $\text{random}() < P_{\text{fail},i}$ is added to the cascade queue. The cascade loop then executes iteratively: each node from the queue is marked as failed, its transferable load is redistributed to non-failed neighbors via Eq.\ (5), and failure probabilities are re-evaluated for all neighbors. These secondary failure checks may add additional nodes to the queue, propagating the cascade until no new failures occur and the queue empties. Finally, recovery is modeled stochastically: each failed node repairs with probability $p_{\text{rec}} = 0.007$ per timestep and re-enters service with health recovery parameter $r_{\text{health}} = 0.75$.
 \item \textbf{Record metrics:} Log failure fraction, avalanche size, and avalanche duration.
 \end{enumerate}
 
@@ -418,14 +379,7 @@ From sweep results, a critical-regime-selection algorithm identifies the paramet
 
 \section{Parameter Sweep Overview}
 
-The baseline parameter sweep identified critical regime at $(\alpha, \beta) = (0.15, 0.5)$ with Watts-Strogatz topology. This setting produced:
-\begin{itemize}
-\item Mean avalanche size: $\langle s \rangle = 3.28 \pm 0.05$ nodes.
-\item Mean avalanche count: $66.5$ avalanches per run (span of 140 timesteps).
-\item Maximum avalanche observed: $120$ nodes (complete network saturation events).
-\item Diverse avalanche sizes spanning multiple orders of magnitude.
-\item Rich temporal dynamics with recovery interspersed among failure cascades.
-\end{itemize}
+The baseline parameter sweep identified critical regime at $(\alpha, \beta) = (0.15, 0.5)$ with Watts-Strogatz topology. At this operating point, the system exhibits rich and diverse cascading dynamics. The mean avalanche size is $\langle s \rangle = 3.28 \pm 0.05$ nodes, with an average of $66.5$ avalanches per run over a simulation horizon of $140$ timesteps. Individual cascades span multiple orders of magnitude---the maximum avalanche size observed is $120$ nodes, representing complete network saturation. These statistics reflect diverse avalanche scales and temporal dynamics in which recovery mechanisms intersperse among failure cascades, producing a quasi-stationary regime.
 
 \section{Avalanche Statistics}
 
@@ -437,12 +391,7 @@ Figure~\ref{fig:avalanche_loglog} shows the avalanche-size distribution on a log
 P(s) \sim s^{-\tau}
 \end{equation}
 
-From the critical-regime simulations:
-\begin{itemize}
-\item Fitted slope: $\tau \approx 1.044$ (with $R^2 = 0.904$).
-\item Sample size: $n = 725$ avalanches pooled across multiple runs.
-\item Power-law region spans roughly $1 \lesssim s \lesssim 50$ nodes.
-\end{itemize}
+Fitting the critical-regime data to a power-law model yields a fitted slope of $\tau \approx 1.044$ with coefficient of determination $R^2 = 0.904$, indicating excellent agreement between theory and observation. The analysis aggregates $n = 725$ avalanche events pooled across multiple independent runs, providing robust statistical evidence. The power-law region spans roughly $1 \lesssim s \lesssim 50$ nodes, covering more than one decade in avalanche size.
 
 The slope $\tau \approx 1.04$ is consistent with SOC in many systems (e.g., forest fires show $\tau \approx 1.0-1.5$, earthquakes $\tau \approx 1.3-1.5$), providing strong evidence that our hydrogen network model exhibits self-organized criticality. The high $R^2 = 0.904$ indicates excellent power-law fit quality across the entire scaling region.
 
@@ -470,23 +419,11 @@ Figure~\ref{fig:topology_panel} presents a 2x2 comparison of key metrics:
 \label{fig:topology_panel}
 \end{figure}
 
-Key findings:
-\begin{itemize}
-\item \textbf{Scale-free (BA) networks} exhibit mean avalanche size $\langle s_{\text{BA}} \rangle = 3.03 \pm 0.11$ nodes with higher variance ($\sigma = 0.11$), reflecting hub vulnerability: hub failure cascades through many dependencies.
-\item \textbf{Small-world (WS) networks} exhibit mean avalanche size $\langle s_{\text{WS}} \rangle = 3.01 \pm 0.08$ nodes with lower variance ($\sigma = 0.08$), reflecting distributed redundancy: shortcut paths provide alternate routing.
-\item Avalanche counts: BA produce $\langle N_{\text{aval, BA}} \rangle = 93.8$ avalanches/run while WS produce $\langle N_{\text{aval, WS}} \rangle = 95.2$ avalanches/run, indicating similar cascade frequency.
-\item Both topologies eventually reach $> 99\%$ final failure over $T = 140$ steps, indicating that without external intervention, both designs ultimately saturate.
-\end{itemize}
+The results reveal distinct resilience signatures across topologies. Scale-free (BA) networks exhibit a mean avalanche size of $\langle s_{\text{BA}} \rangle = 3.03 \pm 0.11$ nodes with higher variance ($\sigma = 0.11$). This elevated variance reflects the structural vulnerability of hub-dependent networks: when a hub fails, it propagates failure through numerous dependent nodes. In contrast, small-world (WS) networks exhibit a mean avalanche size of $\langle s_{\text{WS}} \rangle = 3.01 \pm 0.08$ nodes with noticeably lower variance ($\sigma = 0.08$), reflecting the resilience provided by distributed redundancy and shortcut paths that enable alternate routing around failed components. Avalanche frequency is comparable across both topologies: BA networks produce $\langle N_{\text{aval, BA}} \rangle = 93.8$ avalanches per run while WS networks produce $\langle N_{\text{aval, WS}} \rangle = 95.2$ avalanches per run, indicating similar cascade initiation rates. Both topologies eventually reach $>99\%$ final failure over the $T = 140$ timestep simulation horizon, suggesting that without continuous maintenance and external intervention, both network designs ultimately saturate under these operational conditions.
 
 \subsection{Interpretation}
 
-This behavior aligns with critical infrastructure literature:
-\begin{itemize}
-\item \textbf{Hub-and-spoke} (scale-free) networks are efficient for steady-state operation but fragile under targeted attacks on hubs.
-\item \textbf{Mesh} (small-world) networks are more resilient locally but may incur higher capital cost and operate with lower utilization.
-\end{itemize}
-
-For green hydrogen, the trade-off suggests hybrid designs: core hub infrastructure for cost-efficiency, augmented by bypass/alternate routes for resilience.
+These empirical findings align with established principles in critical infrastructure resilience literature. Hub-and-spoke (scale-free) network architectures are operationally efficient during normal conditions but exhibit fragility under targeted attacks on central hubs, as demonstrated by the higher variance in avalanche sizes. Conversely, mesh-like (small-world) network topologies distribute load and redundancy across the network, yielding greater local resilience but potentially incurring higher capital costs and lower resource utilization. The trade-off between efficiency and resilience suggests that optimal hydrogen infrastructure design should employ hybrid architectures: a core hub infrastructure optimized for cost-efficiency, augmented by bypass paths and alternate routes to enhance resilience during disturbances.
 
 \section{Finite-Size Scaling}
 
@@ -506,12 +443,7 @@ Figure~\ref{fig:finitesize_ba} and~\ref{fig:finitesize_ws} show mean avalanche s
 \label{fig:finitesize_ws}
 \end{figure}
 
-Observed scaling:
-\begin{itemize}
-\item \textbf{BA networks:} Mean avalanche sizes: $N=80 \to 2.48$ nodes, $N=120 \to 2.77$ nodes, $N=180 \to 3.32$ nodes.
-\item \textbf{WS networks:} Mean avalanche sizes: $N=80 \to 2.33$ nodes, $N=120 \to 2.73$ nodes, $N=180 \to 3.34$ nodes.
-\item Approximate power-law: $\langle s \rangle \sim N^{\gamma}$ with $\gamma \approx 0.30$ for both topologies.
-\end{itemize}
+Finite-size scaling analysis reveals power-law growth across network sizes. For Barab\'asi-Albert networks, mean avalanche sizes increase from $2.48$ nodes at $N=80$ to $2.77$ nodes at $N=120$ and $3.32$ nodes at $N=180$. Watts-Strogatz networks show similar behavior: $2.33$ nodes at $N=80$, $2.73$ nodes at $N=120$, and $3.34$ nodes at $N=180$. Both topologies exhibit approximate power-law scaling $\langle s \rangle \sim N^{\gamma}$ with exponent $\gamma \approx 0.30$ for both topologies.
 
 Both exponents are sublinear (< 1), suggesting avalanches are self-limiting: they do not grow proportionally to network size, likely because cascades propagate at fixed speed and dissipate via recovery mechanisms. The similar scaling across both topologies suggests that finite-size effects are dominated by physical cascade dynamics rather than network topology.
 

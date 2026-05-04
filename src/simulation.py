@@ -51,16 +51,18 @@ class Simulation:
         ensure_dirs(os.path.join(self.results_dir, "data"))
 
         # model parameters (tunable)
-        self.P0 = 0.001
-        self.alpha = 0.12
-        self.beta = 0.9
+        # Reduced P0 and alpha/beta to avoid immediate full-network collapse;
+        # increased recovery_prob to support steady-state with richer avalanche ensembles.
+        self.P0 = 0.0001
+        self.alpha = 0.08
+        self.beta = 0.55
         self.noise_sigma = 0.05
-        self.redistribution_factor = 0.9
-        self.degradation_rate = 0.0005
+        self.redistribution_factor = 0.8
+        self.degradation_rate = 0.0003
         # maintenance/recovery keeps the system from collapsing into one-shot failure,
         # enabling richer avalanche statistics in long runs.
-        self.recovery_prob = 0.002
-        self.recovery_health = 0.6
+        self.recovery_prob = 0.007
+        self.recovery_health = 0.75
 
     def step(self) -> Tuple[int, int]:
         """Execute one simulation timestep with cascading failure propagation.
@@ -175,7 +177,10 @@ class Simulation:
 
         # assemble animation
         gif_path = os.path.join(self.results_dir, "animations", "cascading_failures.gif")
-        make_animation(frames, gif_path, fps=6)
+        try:
+            make_animation(frames, gif_path, fps=6)
+        except Exception as e:
+            print(f"Warning: GIF generation failed ({type(e).__name__}), skipping animation")
         print(f"Simulation complete. Results in {self.results_dir}")
 
 

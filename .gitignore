@@ -15,5 +15,4 @@ Thumbs.db
 .mypy_cache/
 
 # Large generated simulation outputs (can be regenerated)
-results/
 green_results/
