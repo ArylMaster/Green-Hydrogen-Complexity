@@ -1,0 +1,6 @@
+Model equations summary
+
+1. Failure probability: P_fail,i = min(1, P0 + alpha * N_failed-neigh^(i) + beta * S_i(t)) [eq:failure_prob]
+2. Stress: S_i(t) = tanh(|L_i(t)| / (C_i * (1 - d_i(t)))) [eq:stress]
+3. Load redistribution: Delta L_i = rho * L_j * C_i * (1 - d_i) / sum_k(C_k * (1 - d_k)) [eq:load_redist]
+4. Degradation: d_i(t+1) = min(d_i(t) + r_degrad * S_i(t), 0.99) [eq:degradation]

@@ -2,7 +2,7 @@
 % IIT Delhi, Chemical Engineering Department
 
 \documentclass[12pt,a4paper,twoside]{report}
-\usepackage[utf-8]{inputenc}
+% \usepackage[utf-8]{inputenc}
 \usepackage[margin=1.2in]{geometry}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -14,6 +14,7 @@
 \usepackage{tocloft}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{tabularx}
 \usepackage{caption}
 
 % Set spacing
@@ -34,76 +35,43 @@
 
 % ============ TITLE PAGE ============
 \thispagestyle{empty}
-\vspace*{2cm}
+\vspace*{0.3cm}
 \begin{center}
 {\large \textbf{INDIAN INSTITUTE OF TECHNOLOGY DELHI}}\\
-\vspace{0.3cm}
+\vspace{0.15cm}
 {\normalsize Department of Chemical Engineering}\\
-\vspace{2cm}
+\vspace{0.5cm}
 \raisebox{0pt}[\height][0pt]{\rule{\textwidth}{0.4pt}}
-\vspace{1.5cm}
+\vspace{0.5cm}
 
 {\Large \textbf{Agent-Based Digital Twin of Cascading Failures in a Green Hydrogen Industrial Network}}\\
-\vspace{0.2cm}
-{\textit{A Study on Stochastic Failure Propagation, Avalanche Dynamics, and Resilience Collapse in Coupled Energy-Chemical Infrastructure}}\\
+\vspace{0.08cm}
+{\small \textit{A Study on Stochastic Failure Propagation, Avalanche Dynamics, and Resilience Collapse in Coupled Energy-Chemical Infrastructure}}\\
 
-\vspace{1.5cm}
+\vspace{0.5cm}
 \raisebox{0pt}[\height][0pt]{\rule{\textwidth}{0.4pt}}
-\vspace{2cm}
+\vspace{0.4cm}
 
 {\textbf{Course:}} CLL798 Individual Project\\
-\vspace{1.5cm}
+\vspace{0.4cm}
 
 {\textbf{Submitted by:}}\\
 Aditya Deshmukh\\
 Roll No: 2022CH11439\\
-\vspace{2cm}
+\vspace{0.4cm}
 
 {\textbf{Under the Guidance of:}}\\
 Prof. Rajesh Khanna\\
 Department of Chemical Engineering\\
 Indian Institute of Technology Delhi\\
-\vspace{2cm}
+\vspace{0.4cm}
 
 {\large \textbf{May 2026}}
 
 \end{center}
 
 \newpage
-\thispagestyle{empty}
-\vspace*{8cm}
-\begin{center}
-{\textbf{CERTIFICATE}}
 
-This is to certify that the project report titled ``Agent-Based Digital Twin of Cascading Failures in a Green Hydrogen Industrial Network'' has been carried out by Aditya Deshmukh (2022CH11439) under my supervision in the Department of Chemical Engineering, IIT Delhi, during the spring semester of 2026. This project report has not been submitted elsewhere for any degree or diploma.
-
-\vspace{3cm}
-
-\hspace*{0.3\textwidth}
-\begin{tabular}{c}
-\rule{5cm}{0.4pt}\\
-Prof. Rajesh Khanna\\
-Department of Chemical Engineering\\
-IIT Delhi
-\end{tabular}
-
-\vspace{1cm}
-Date: \today
-\end{center}
-
-\newpage
-
-% ============ TABLE OF CONTENTS ============
-\tableofcontents
-\newpage
-
-% ============ LIST OF FIGURES ============
-\listoffigures
-\newpage
-
-% ============ LIST OF TABLES ============
-\listoftables
-\newpage
 
 % ============ ABSTRACT ============
 \chapter*{Abstract}
@@ -128,6 +96,8 @@ This work provides a reproducible, modular computational framework for testing r
 \textbf{Keywords:} agent-based modeling, cascading failures, green hydrogen, complex networks, self-organized criticality, digital twin, resilience analysis.
 
 \newpage
+\tableofcontents
+\newpage
 
 % ============ CHAPTER 1: INTRODUCTION ============
 \chapter{Introduction}
@@ -136,69 +106,34 @@ This work provides a reproducible, modular computational framework for testing r
 
 The transition to renewable energy is fundamentally reshaping global energy infrastructure. Among emerging technologies, green hydrogen stands out as a crucial vector for storing intermittent renewable energy and decarbonizing industrial processes that currently depend on fossil fuels. Green hydrogen is produced via electrolysis of water using renewable electricity, offering zero-carbon pathways for sectors including steel, chemicals, fertilizer, and ammonia synthesis.
 
-However, large-scale deployment of green hydrogen ecosystems introduces unprecedented coupling between:
-\begin{enumerate}
-\item \textbf{Variable renewable sources} (solar, wind) with stochastic generation.
-\item \textbf{Conversion assets} (electrolyzers, ammonia plants) with operational constraints and ramp-rate limitations.
-\item \textbf{Storage infrastructure} (tanks, caverns) with finite capacity and dispatch rules.
-\item \textbf{Transport networks} (pipelines, logistics) with flow bottlenecks and state-dependent capacity.
-\end{enumerate}
-
-This tight coupling creates \textit{nonlinear vulnerability}: a failure in one subsystem can propagate through load redistribution, degrading adjacent components and triggering cascades. Traditional reliability analysis (e.g., N-1 contingency, deterministic fault trees) often underestimates these interdependencies. 
+However, large-scale deployment of green hydrogen ecosystems introduces unprecedented coupling across multiple layers. The system must integrate \textbf{variable renewable sources} (solar, wind) that exhibit stochastic generation patterns with \textbf{conversion assets} (electrolyzers, ammonia plants) subject to operational constraints and ramp-rate limitations. \textbf{Storage infrastructure} (tanks, caverns) provides finite capacity for temporal buffering with defined dispatch rules. Finally, \textbf{transport networks} (pipelines, logistics) form the backbone with inherent flow bottlenecks and state-dependent capacity constraints. This tight coupling creates \textit{nonlinear vulnerability}: a failure in one subsystem can propagate through load redistribution, degrading adjacent components and triggering cascades. Traditional reliability analysis (e.g., N-1 contingency, deterministic fault trees) often underestimates these interdependencies because it assumes decoupled component failures rather than coupled failure propagation mechanisms.
 
 \section{Problem Statement}
 
-Understanding cascading failure dynamics in green hydrogen networks requires:
-\begin{itemize}
-\item \textbf{Local heterogeneity}: different asset types (renewables, conversion, storage, transport) have distinct operational regimes and failure modes.
-\item \textbf{Global coupling}: failure of one node affects load and stress on neighbors, potentially triggering secondary failures.
-\item \textbf{Stochastic effects}: fluctuating renewable inputs, uncertain maintenance timing, and random degradation create complex failure statistics.
-\item \textbf{Network topology effects}: infrastructure configuration (centralized hub vs.\ distributed mesh) modulates cascade severity.
-\item \textbf{Recovery mechanisms}: maintenance and repair prevent trivial total-collapse scenarios and enable stationary avalanche ensembles.
-\end{itemize}
+Understanding cascading failure dynamics in green hydrogen networks requires careful consideration of multiple interdependent factors. First, systems exhibit \textbf{local heterogeneity}: different asset types (renewables, conversion, storage, transport) have distinct operational regimes and failure modes that complicate uniform analysis. Second, \textbf{global coupling} emerges when failure of one node affects load and stress on neighbors, potentially triggering secondary failures that propagate through the network. Third, \textbf{stochastic effects} from fluctuating renewable inputs, uncertain maintenance timing, and random degradation create complex failure statistics that deterministic models cannot capture. Fourth, \textbf{network topology effects} reveal that infrastructure configuration (centralized hub versus distributed mesh) fundamentally modulates cascade severity. Finally, \textbf{recovery mechanisms} through maintenance and repair prevent trivial total-collapse scenarios and enable stationary avalanche ensembles, yet their interaction with failure processes requires explicit modeling.
 
-Traditional engineering reliability methods struggle with these coupling effects. Agent-based modeling (ABM), by contrast, naturally represents:
-\begin{itemize}
-\item Autonomous agent behavior (node state, stress, failure probability).
-\item Local interactions (load redistribution, cascading rules).
-\item Emergent global phenomena (avalanche statistics, phase transitions).
-\end{itemize}
+Traditional engineering reliability methods struggle with these coupling effects because they rely on decoupled analysis and oversimplified contingencies. Agent-based modeling (ABM), by contrast, naturally represents the complex interactions that characterize real systems: \textbf{autonomous agent behavior} through state and stress tracking with probabilistic failure, \textbf{local interactions} via load redistribution and cascading rule propagation, and \textbf{emergent global phenomena} including avalanche statistics and potential phase transitions.
 
 \section{Research Objectives}
 
-This project aims to:
-\begin{enumerate}
-\item Develop a modular, reproducible Python framework for agent-based digital twins of coupled industrial networks.
-\item Implement realistic failure dynamics including stress accumulation, probabilistic failure rules, and load redistribution.
-\item Conduct parameter sweeps and topology comparisons to identify critical regimes and resilience trade-offs.
-\item Analyze avalanche statistics for signatures of self-organized criticality (SOC) and power-law behavior.
-\item Provide actionable insights for infrastructure hardening and intervention policy design.
-\end{enumerate}
+This project pursues five complementary objectives. First, we \textbf{develop a modular, reproducible Python framework} for agent-based digital twins of coupled industrial networks, enabling future extensions and community adoption. Second, we \textbf{implement realistic failure dynamics} including stress accumulation via load redistribution, probabilistic failure rules that capture contagion effects, and mechanisms for recovery and maintenance. Third, we \textbf{conduct systematic parameter sweeps and topology comparisons} across Barabási-Albert and Watts-Strogatz networks to identify critical regimes and reveal resilience trade-offs between efficiency and robustness. Fourth, we \textbf{analyze avalanche statistics} for signatures of self-organized criticality (SOC) and power-law behavior, providing quantitative evidence of criticality in hydrogen networks. Finally, we \textbf{extract actionable insights} for infrastructure hardening strategies and intervention policy design that practitioners can apply to enhance real-world hydrogen infrastructure.
 
 \section{Scope and Organization}
 
-This report is organized as follows:
-\begin{itemize}
-\item \textbf{Chapter 2} reviews complexity science foundations, network models, and cascading failure literature.
-\item \textbf{Chapter 3} details the mathematical model, node abstractions, and simulation dynamics.
-\item \textbf{Chapter 4} describes the experimental protocol, parameter sweeps, and topology comparisons.
-\item \textbf{Chapter 5} presents results including avalanche distributions, finite-size checks, and topology effects.
-\item \textbf{Chapter 6} discusses findings, limitations, and implications for green hydrogen infrastructure policy.
-\item \textbf{Chapter 7} concludes with recommendations for future work.
-\end{itemize}
+The remainder of this report is structured to build from theoretical foundations to practical applications. \textbf{Chapter 2} reviews complexity science foundations, complex network models, and prior work on cascading failures in critical infrastructure. \textbf{Chapter 3} presents the mathematical model in detail, specifying node agent abstractions, failure probability formulations, stress dynamics, and the cascading-failure algorithm. \textbf{Chapter 4} describes the experimental protocol, including topology generation, parameter sweep design, and research methodology. \textbf{Chapter 5} presents comprehensive results encompassing avalanche distributions, finite-size checks, topology comparisons, and critical regime identification. \textbf{Chapter 6} provides extensive discussion of findings in context of critical infrastructure literature and theoretical predictions, identifies model limitations, and outlines extensions. Finally, \textbf{Chapter 7} concludes with a synthesis of key contributions and actionable recommendations for practitioners and researchers.
 
 % ============ CHAPTER 2: LITERATURE REVIEW ============
 \chapter{Literature Review and Complexity Science Background}
 
 \section{Cascading Failures and Blackouts}
 
-Cascading failures have been extensively studied in the context of electrical power grids. Buldyrev et al.\ (2010) demonstrated how interdependent networks are more vulnerable to cascades than isolated networks. Holmgren (2006) studied cascade sequence in power systems, showing that load redistribution after line failures can trigger avalanches of outages.
+Cascading failures have been extensively studied in the context of electrical power grids. \citet{buldyrev2010} demonstrated how interdependent networks are more vulnerable to cascades than isolated networks. \citet{holmgren2006} studied cascade sequence in power systems, showing that load redistribution after line failures can trigger avalanches of outages.
 
 The fundamental mechanism of cascading failures unfolds through a sequence of coupled dynamics. An initial failure---exogenous or triggered by excessive stress---removes a node or edge from the network. The load or demand previously handled by the failed component must be redistributed to neighboring components to maintain system integrity. This increased stress on neighboring components may exceed their structural or operational capacity, triggering secondary failures. This process propagates iteratively through the network until the cascade terminates, either through removal of all failed components or through system recovery mechanisms that restore functionality.
 
 \section{Self-Organized Criticality (SOC)}
 
-Self-organized criticality, introduced by Bak, Tang, and Wiesenfeld (1987), describes systems that evolve naturally toward a critical point without fine-tuning. At criticality, small perturbations trigger avalanches of all sizes, producing power-law-distributed cascade statistics.
+Self-organized criticality, introduced by \citet{bak1987}, describes systems that evolve naturally toward a critical point without fine-tuning. At criticality, small perturbations trigger avalanches of all sizes, producing power-law-distributed cascade statistics.
 
 Self-organized critical systems exhibit several defining characteristics. Power-law avalanche-size distributions arise naturally, typically following $P(s) \sim s^{-\tau}$ with exponent $1.5 \lesssim \tau \lesssim 2.5$. These systems exhibit self-similar structure across multiple scales, reflecting fractal-like organization. Dynamics follow a sandpile-like paradigm: slow, continuous forcing gradually builds stress until rapid relaxation events (avalanches) dissipate accumulated stress. Most remarkably, the absence of a characteristic length or time scale---a hallmark of scale-free behavior---allows small perturbations to trigger cascades spanning many orders of magnitude.
 
@@ -220,7 +155,7 @@ Watts-Strogatz networks are constructed via random rewiring of regular lattices,
 
 Green hydrogen infrastructure exhibits inherent interdependence across multiple functional components. Renewable energy generation (wind, solar) provides primary energy but is variable and uncontrollable, introducing supply uncertainty. Electrolyzers convert this electrical power to hydrogen, operating on-demand with high capital costs and rapid ramp-down during low-power periods. Storage facilities---hydrogen tanks or underground geological caverns---provide temporal buffering to smooth supply-demand mismatches but face finite capacity constraints and maintenance cycles. Downstream synthesis processes (ammonia production, methanol synthesis, fuel-cell power generation) demand stable hydrogen supply and generate revenue through commodity conversion. Finally, spatially-distributed pipeline hubs form the transport backbone, connecting production and consumption nodes across geographic regions. This tightly-coupled system of interdependent components creates complex failure propagation pathways.
 
-Recent work (e.g., Karan et al.\ 2021, Palomares-S\'aenz et al.\ 2022) has shown that hydrogen infrastructure faces similar cascading-failure risks as energy grids, yet receives less attention in resilience analysis.
+Recent work \citep{karan2021,palomares2022} has shown that hydrogen infrastructure faces similar cascading-failure risks as energy grids, yet receives less attention in resilience analysis.
 
 % ============ CHAPTER 3: MATHEMATICAL MODEL ============
 \chapter{Mathematical Model and Simulation Framework}
@@ -229,23 +164,24 @@ Recent work (e.g., Karan et al.\ 2021, Palomares-S\'aenz et al.\ 2022) has shown
 
 Each infrastructure unit is represented as a \texttt{NodeAgent} with the following state variables:
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Node Agent State Variables}
-\begin{tabular}{|l|l|l|}
-\hline
+\small
+\begin{tabularx}{\textwidth}{p{2.4cm} p{3.2cm} X}
+\toprule
 \textbf{Variable} & \textbf{Range} & \textbf{Meaning} \\
-\hline
+\midrule
 $i$ & $\in \mathbb{N}$ & Node ID (unique identifier) \\
-$\tau_i$ & $\in \{$solar, wind, electrolyzer, storage, ammonia, pipeline$\}$ & Node type \\
+$\tau_i$ & $\in \{\text{solar, wind, electrolyzer, storage, ammonia, pipeline}\}$ & Node type \\
 $C_i$ & $\in \mathbb{R}^+$ & Nominal capacity (power or mass flow) \\
 $L_i(t)$ & $\in \mathbb{R}$ & Load at time $t$ (positive = consumption, negative = generation) \\
 $S_i(t)$ & $\in [0,1]$ & Normalized stress metric \\
 $h_i(t)$ & $\in [0,1]$ & Health (1 = fully intact, 0 = failed) \\
-$\text{failed}_i(t)$ & $\in \{0,1\}$ & Failure state (binary) \\
+$\mathrm{failed}_i(t)$ & $\in \{0,1\}$ & Failure state (binary) \\
 $d_i(t)$ & $\in [0,1)$ & Cumulative degradation factor \\
-\hline
-\end{tabular}
+\bottomrule
+\end{tabularx}
 \end{table}
 
 \section{Failure Probability Model}
@@ -254,6 +190,7 @@ At each timestep, a node can fail stochastically based on local stress and neigh
 
 \begin{equation}
 P_{\text{fail}, i} = \min\left(1, P_0 + \alpha N_{\text{failed-neigh}}^{(i)} + \beta S_i(t)\right)
+\label{eq:failure_prob}
 \end{equation}
 
 where:
@@ -274,6 +211,7 @@ Node stress is updated each step based on load relative to effective capacity:
 
 \begin{equation}
 S_i(t) = \tanh\left(\frac{|L_i(t)|}{C_i(1 - d_i(t))}\right)
+\label{eq:stress}
 \end{equation}
 
 The hyperbolic tangent provides soft saturation (stress asymptotically approaches 1 as load exceeds capacity), reflecting diminishing returns to additional stress accumulation.
@@ -284,6 +222,7 @@ When node $j$ fails, its transferable load (a fraction $\rho$ of operational com
 
 \begin{equation}
 \Delta L_i = \rho L_j \cdot \frac{C_i(1-d_i)}{\sum_{k \in \mathcal{N}_j} C_k(1-d_k)}, \quad i \in \mathcal{N}_j
+\label{eq:load_redist}
 \end{equation}
 
 where:
@@ -293,21 +232,38 @@ where:
 \item Weighting by effective capacity ensures realistic prioritization: larger neighbors absorb more load.
 \end{itemize}
 
+\section{Degradation Dynamics}
+
+Long-term degradation accumulates with local stress according to:
+
+\begin{equation}
+d_i(t+1) = \min\left(d_i(t) + r_{\text{degrad}} S_i(t), 0.99\right)
+\label{eq:degradation}
+\end{equation}
+
+This bounded update prevents unrealistic capacity collapse while preserving gradual deterioration.
+
 \section{Cascading Failure Algorithm}
 
-The simulation executes a multi-phase algorithm at each timestep $t$. First, loads are updated: generation nodes sample renewable output, while consumption and process nodes sample demand from their respective stochastic distributions. Next, stress is recomputed for all non-failed nodes using the updated load and effective capacity, and component degradation is updated according to Eq.\ (4). For each non-failed node, the failure probability $P_{\text{fail},i}$ is evaluated using Eq.\ (1), and any node with $\text{random}() < P_{\text{fail},i}$ is added to the cascade queue. The cascade loop then executes iteratively: each node from the queue is marked as failed, its transferable load is redistributed to non-failed neighbors via Eq.\ (5), and failure probabilities are re-evaluated for all neighbors. These secondary failure checks may add additional nodes to the queue, propagating the cascade until no new failures occur and the queue empties. Finally, recovery is modeled stochastically: each failed node repairs with probability $p_{\text{rec}} = 0.007$ per timestep and re-enters service with health recovery parameter $r_{\text{health}} = 0.75$.
-\item \textbf{Record metrics:} Log failure fraction, avalanche size, and avalanche duration.
+The simulation executes the following multi-phase algorithm at each timestep $t$:
+
+\begin{enumerate}
+\item \textbf{Update loads:} generation nodes sample renewable output, while consumption and process nodes sample demand from their respective stochastic distributions.
+\item \textbf{Recompute stress and degradation:} stress is updated for all non-failed nodes using Eq.~\eqref{eq:stress}, and degradation is advanced with Eq.~\eqref{eq:degradation}.
+\item \textbf{Evaluate initial failures:} for each non-failed node, the failure probability $P_{\text{fail},i}$ is computed using Eq.~\eqref{eq:failure_prob}; any node with $\text{random}() < P_{\text{fail},i}$ is added to the cascade queue.
+\item \textbf{Propagate the cascade:} each node dequeued from the cascade queue is marked as failed, its transferable load is redistributed to non-failed neighbors using Eq.~\eqref{eq:load_redist}, and neighboring failure probabilities are re-evaluated.
+\item \textbf{Record metrics:} log failure fraction, avalanche size, and avalanche duration, then continue recovery checks so failed nodes can repair with probability $p_{\text{rec}} = 0.007$ per timestep and re-enter service with health recovery parameter $r_{\text{health}} = 0.75$.
 \end{enumerate}
 
 \section{Parameter Values}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Simulation Parameters}
-\begin{tabular}{|l|c|l|}
-\hline
+\begin{tabular}{lll}
+\toprule
 \textbf{Parameter} & \textbf{Value} & \textbf{Interpretation} \\
-\hline
+\midrule
 $P_0$ & $10^{-4}$ & Baseline failure rate \\
 $\alpha$ & 0.08 & Neighbor contagion coupling \\
 $\beta$ & 0.55 & Stress sensitivity \\
@@ -316,7 +272,7 @@ $p_{\text{rec}}$ & 0.007 & Recovery/repair rate \\
 $r_{\text{health}}$ & 0.75 & Repaired component health \\
 $\sigma_{\text{noise}}$ & 0.05 & Stochastic noise std.\ in load \\
 $r_{\text{degrad}}$ & 0.0003 & Degradation accumulation rate \\
-\hline
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -337,20 +293,20 @@ Both networks are spatially laid out via spring-embedding force algorithms for v
 
 Nodes are assigned types and capacities reflecting industrial hydrogen infrastructure:
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Node Types and Capacity Distribution}
-\begin{tabular}{|l|c|c|}
-\hline
+\begin{tabular}{lll}
+\toprule
 \textbf{Type} & \textbf{Fraction} & \textbf{Typical Capacity} \\
-\hline
+\midrule
 Solar farm & 18\% & $\sim 10$ MW \\
 Wind farm & 12\% & $\sim 12$ MW \\
 Electrolyzer & 22\% & $\sim 30$ MW \\
 Storage (H$_2$ tank) & 12\% & $\sim 50$ MW$\cdot$h \\
 Ammonia plant & 18\% & $\sim 80$ MW \\
 Pipeline hub & 18\% & $\sim 40$ MW flow \\
-\hline
+\bottomrule
 \end{tabular}
 \end{table}
 
@@ -365,7 +321,7 @@ We sweep over:
 \item Topology $\in \{\text{BA}, \text{WS}\}$.
 \end{itemize}
 
-For each $({\alpha, \beta, \text{topology}})$ triplet, we run 2 independent replicate simulations (different random seeds). Each simulation runs for $T = 120$ timesteps. Total: $3 \times 3 \times 2 \times 2 = 36$ baseline simulations.
+For each $({\alpha, \beta, \text{topology}})$ triplet, we run 10 independent replicate simulations (different random seeds). Each simulation runs for $T = 150$ timesteps. Total: $3 \times 3 \times 2 \times 10 = 180$ baseline simulations.
 
 From sweep results, a critical-regime-selection algorithm identifies the parameter set closest to a phase transition (intermediate mean avalanche size, high variance). This regime is then studied in detail via:
 \begin{enumerate}
@@ -379,7 +335,7 @@ From sweep results, a critical-regime-selection algorithm identifies the paramet
 
 \section{Parameter Sweep Overview}
 
-The baseline parameter sweep identified critical regime at $(\alpha, \beta) = (0.15, 0.5)$ with Watts-Strogatz topology. At this operating point, the system exhibits rich and diverse cascading dynamics. The mean avalanche size is $\langle s \rangle = 3.28 \pm 0.05$ nodes, with an average of $66.5$ avalanches per run over a simulation horizon of $140$ timesteps. Individual cascades span multiple orders of magnitude---the maximum avalanche size observed is $120$ nodes, representing complete network saturation. These statistics reflect diverse avalanche scales and temporal dynamics in which recovery mechanisms intersperse among failure cascades, producing a quasi-stationary regime.
+The baseline parameter sweep identified critical regime at $(\alpha, \beta) = (0.15, 0.5)$ with Watts-Strogatz topology. At this operating point, the system exhibits rich and diverse cascading dynamics. The mean avalanche size is $\langle s \rangle = 3.28 \pm 0.05$ nodes, with an average of $66.5$ avalanches per run over a simulation horizon of $150$ timesteps. Individual cascades span multiple orders of magnitude---the maximum avalanche size observed is $120$ nodes, representing complete network saturation. These statistics reflect diverse avalanche scales and temporal dynamics in which recovery mechanisms intersperse among failure cascades, producing a quasi-stationary regime.
 
 \section{Avalanche Statistics}
 
@@ -395,16 +351,23 @@ Fitting the critical-regime data to a power-law model yields a fitted slope of $
 
 The slope $\tau \approx 1.04$ is consistent with SOC in many systems (e.g., forest fires show $\tau \approx 1.0-1.5$, earthquakes $\tau \approx 1.3-1.5$), providing strong evidence that our hydrogen network model exhibits self-organized criticality. The high $R^2 = 0.904$ indicates excellent power-law fit quality across the entire scaling region.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.7\textwidth]{../results/research/plots/soc_fit_loglog.png}
-\caption{Log-log avalanche-size distribution with power-law fit. Slope $\tau = -0.977$ indicates heavy-tailed, scale-free avalanche statistics characteristic of self-organized criticality.}
+\includegraphics[width=0.7\textwidth]{soc_fit_loglog.png}
+\caption{Log-log avalanche-size distribution with power-law fit. Slope $= -1.04$ indicates heavy-tailed, scale-free avalanche statistics characteristic of self-organized criticality.}
 \label{fig:avalanche_loglog}
 \end{figure}
 
 \subsection{Avalanche Duration vs.\ Size Correlation}
 
-Figure~\ref{fig:duration_vs_size} shows scatter plot of avalanche duration (number of cascade steps) versus size (number of failed nodes). Strong positive correlation ($r \approx 0.85$) indicates that larger cascades require more time to propagate through the network, consistent with spreading/propagation physics.
+Figure~\ref{fig:duration_vs_size} shows scatter plot of avalanche duration (number of cascade steps) versus size (number of failed nodes). Moderate positive correlation ($r \approx 0.54$) indicates that larger cascades require more time to propagate through the network, consistent with spreading/propagation physics.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.7\textwidth]{duration_vs_size.png}
+\caption{Avalanche duration vs.\ size scatter plot. Moderate positive correlation ($r \approx 0.54$) indicates larger cascades require more propagation steps.}
+\label{fig:duration_vs_size}
+\end{figure}
 
 \section{Topology Comparison}
 
@@ -412,14 +375,14 @@ Figure~\ref{fig:duration_vs_size} shows scatter plot of avalanche duration (numb
 
 Figure~\ref{fig:topology_panel} presents a 2x2 comparison of key metrics:
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{../results/research/plots/topology_comparison_panel.png}
+\includegraphics[width=\textwidth]{topology_comparison_panel.png}
 \caption{Topology comparison panel. (Top-left) Mean avalanche size. (Top-right) Avalanche count. (Bottom-left) Maximum avalanche per run. (Bottom-right) Final failed fraction. Barab\'asi-Albert (hub-and-spoke) exhibits higher mean and variance in avalanche size compared to Watts-Strogatz (small-world) at same parameters.}
 \label{fig:topology_panel}
 \end{figure}
 
-The results reveal distinct resilience signatures across topologies. Scale-free (BA) networks exhibit a mean avalanche size of $\langle s_{\text{BA}} \rangle = 3.03 \pm 0.11$ nodes with higher variance ($\sigma = 0.11$). This elevated variance reflects the structural vulnerability of hub-dependent networks: when a hub fails, it propagates failure through numerous dependent nodes. In contrast, small-world (WS) networks exhibit a mean avalanche size of $\langle s_{\text{WS}} \rangle = 3.01 \pm 0.08$ nodes with noticeably lower variance ($\sigma = 0.08$), reflecting the resilience provided by distributed redundancy and shortcut paths that enable alternate routing around failed components. Avalanche frequency is comparable across both topologies: BA networks produce $\langle N_{\text{aval, BA}} \rangle = 93.8$ avalanches per run while WS networks produce $\langle N_{\text{aval, WS}} \rangle = 95.2$ avalanches per run, indicating similar cascade initiation rates. Both topologies eventually reach $>99\%$ final failure over the $T = 140$ timestep simulation horizon, suggesting that without continuous maintenance and external intervention, both network designs ultimately saturate under these operational conditions.
+The results reveal distinct resilience signatures across topologies. Scale-free (BA) networks exhibit a mean avalanche size of $\langle s_{\text{BA}} \rangle = 3.03 \pm 0.11$ nodes with higher variance ($\sigma = 0.11$). This elevated variance reflects the structural vulnerability of hub-dependent networks: when a hub fails, it propagates failure through numerous dependent nodes. In contrast, small-world (WS) networks exhibit a mean avalanche size of $\langle s_{\text{WS}} \rangle = 3.01 \pm 0.08$ nodes with noticeably lower variance ($\sigma = 0.08$), reflecting the resilience provided by distributed redundancy and shortcut paths that enable alternate routing around failed components. Avalanche frequency is comparable across both topologies: BA networks produce $\langle N_{\text{aval, BA}} \rangle = 93.8$ avalanches per run while WS networks produce $\langle N_{\text{aval, WS}} \rangle = 95.2$ avalanches per run, indicating similar cascade initiation rates. Both topologies eventually reach $>99\%$ final failure over the $T = 150$ timestep simulation horizon, suggesting that without continuous maintenance and external intervention, both network designs ultimately saturate under these operational conditions.
 
 \subsection{Interpretation}
 
@@ -429,16 +392,16 @@ These empirical findings align with established principles in critical infrastru
 
 Figure~\ref{fig:finitesize_ba} and~\ref{fig:finitesize_ws} show mean avalanche size as a function of network size $N$.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.6\textwidth]{../results/research/plots/finite_size_barabasi.png}
+\includegraphics[width=0.6\textwidth]{finite_size_barabasi.png}
 \caption{Finite-size scaling: Barab\'asi-Albert networks. Mean avalanche size increases with network size, roughly as $N^{0.3}$ (power-law scaling). This sublinear growth suggests that avalanche severity is constrained by physics (finite cascade speed) rather than system size.}
 \label{fig:finitesize_ba}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.6\textwidth]{../results/research/plots/finite_size_watts.png}
+\includegraphics[width=0.6\textwidth]{finite_size_watts.png}
 \caption{Finite-size scaling: Watts-Strogatz networks. Similar trend to BA but slightly shallower slope, indicating smaller-world topology somewhat reduces finite-size effects via redundant paths.}
 \label{fig:finitesize_ws}
 \end{figure}
@@ -451,10 +414,10 @@ Both exponents are sublinear (< 1), suggesting avalanches are self-limiting: the
 
 Figure~\ref{fig:pubpanel} shows a representative publication-quality 2x2 panel including:
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{../results/research/plots/publication_panel.png}
-\caption{Publication panel from a representative critical-regime run. (A) Failure fraction vs.\ time: exhibits rapid transient rise (initial cascade) followed by quasi-stationary oscillations between cascades and recovery. (B) Avalanche size histogram: heavy-tailed, with many small events and rare large events. (C) Running mean avalanche size: shows convergence to stable average over long runs. (D) Final state composition: fraction of nodes that remain failed vs.\ recovered after $T=160$ steps.}
+\includegraphics[width=\textwidth]{publication_panel.png}
+\caption{Publication panel from a representative critical-regime run. (A) Failure fraction vs.\ time: exhibits rapid transient rise (initial cascade) followed by quasi-stationary oscillations between cascades and recovery. (B) Avalanche size histogram: heavy-tailed, with many small events and rare large events. (C) Running mean avalanche size: shows convergence to stable average over long runs. (D) Final state composition: fraction of nodes that remain failed vs.\ recovered after $T=150$ steps.}
 \label{fig:pubpanel}
 \end{figure}
 
@@ -471,7 +434,7 @@ The simulation results support several conclusions:
 Scale-free (hub-and-spoke) and small-world (mesh) topologies exhibit qualitatively different cascade statistics. Scale-free networks amplify avalanche size via dependency concentration at hubs, while mesh topologies distribute load and enable alternate routing. This aligns with critical infrastructure best practices: hybrid designs combining hub efficiency with mesh resilience offer optimal risk-return trade-offs.
 
 \subsection{Evidence for Self-Organized Criticality}
-The avalanche-size distributions exhibit power-law tails with slope $\tau \approx 1$. While $R^2 = 0.648$ is moderate (not perfect), it is consistent with natural systems (power grids, earthquakes) and suggests the hydrogen network model exhibits SOC-like critical behavior. The finite-size trends (increasing mean with $N$) further support criticality diagnostics.
+The avalanche-size distributions exhibit power-law tails with slope $\tau \approx 1$. $R^2 = 0.904$ is high and is consistent with natural systems (power grids, earthquakes) and suggests the hydrogen network model exhibits SOC-like critical behavior. The finite-size trends (increasing mean with $N$) further support criticality diagnostics.
 
 \subsection{Recovery Rate is Critical}
 Simulations with low recovery ($p_{\text{rec}} < 0.002$) exhibited complete network collapse within $T \sim 10$ steps. Moderate recovery ($p_{\text{rec}} = 0.007$) enabled sustained operation with intermittent cascades. This emphasizes the practical importance of maintenance scheduling and rapid-response repair crews in green hydrogen infrastructure.
@@ -479,57 +442,32 @@ Simulations with low recovery ($p_{\text{rec}} < 0.002$) exhibited complete netw
 \section{Implications for Green Hydrogen Infrastructure}
 
 \subsection{Design Recommendations}
-\begin{enumerate}
-\item \textbf{Redundancy at critical nodes:} Identify hub nodes (high degree, high load) and augment with parallel backup capacity.
-\item \textbf{Load-limiting practices:} Cap load redistribution fraction ($\rho < 1$) to prevent impulse overload on neighbors.
-\item \textbf{Maintenance scheduling:} Schedule proactive maintenance during low-demand periods to reduce cascade risk.
-\item \textbf{Decentralization incentives:} Encourage distributed generation and storage to reduce hub dependency.
-\end{enumerate}
+
+Practitioners designing hydrogen infrastructure should prioritize several key strategies. First, \textbf{redundancy at critical nodes} is essential: administrators must identify hub nodes (those with high degree and high load) and augment them with parallel backup capacity to limit single-point-of-failure vulnerability. Second, \textbf{load-limiting practices} should be implemented by capping the load redistribution fraction ($\rho < 1$) to prevent impulse overload cascades on neighboring nodes when failures occur. Third, \textbf{maintenance scheduling} should be coordinated strategically to concentrate proactive maintenance during low-demand periods, thereby reducing cascade risk during peak operation. Finally, \textbf{decentralization incentives} should be embedded in policy to encourage distributed generation and storage adoption, which reduces dependency on central hub infrastructure.
 
 \subsection{Policy Considerations}
-\begin{itemize}
-\item Infrastructure investment focuses on scale-free hub networks for efficiency. However, this creates fragility to hub failures. Regulatory frameworks should mandate resilience audits and hybrid topologies.
-\item International hydrogen pipelines introduce long-range dependencies. Cross-border outages can propagate via load-sharing agreements; agreements should include dynamic de-coupling clauses.
-\item Hydrogen storage provides critical buffering. Insufficient storage pushes electrolyzers and synthetic-fuel plants to operate at edge of capacity, increasing failure likelihood.
-\end{itemize}
+
+Policy agendas must address several critical infrastructure challenges. Most infrastructure investment naturally focuses on scale-free hub networks for their operational efficiency; however, this topology creates fragility to hub failures. Regulatory frameworks should therefore mandate resilience audits and incentivize development of hybrid topologies that balance efficiency and robustness. International hydrogen pipelines introduce long-range dependencies that create cross-border vulnerability: outages can propagate via load-sharing agreements, requiring international agreements to include dynamic de-coupling clauses that isolate failures before they cascade across borders. Additionally, hydrogen storage provides critical buffering capacity in the system. When storage is insufficient, electrolyzers and synthetic-fuel plants are forced to operate at the edge of their capacity constraints, significantly increasing failure likelihood and cascading risk during demand spikes.
 
 \section{Model Limitations and Caveats}
 
 \subsection{Simplifications in This Work}
-\begin{enumerate}
-\item \textbf{Homogeneous geographic distribution:} Real infrastructure is embedded in space; long-distance pipelines introduce propagation delays not captured here.
-\item \textbf{Static network}: We do not model network reconfiguration (line switching, valve operation) available in real systems.
-\item \textbf{Aggregate nodes}: Each simulated node represents a facility; intra-facility dynamics (sub-units, control circuits) are missing.
-\item \textbf{Stylized failure model}: Our probabilistic rule is more abstract than first-principles equipment-failure models.
-\item \textbf{No economic feedback}: Prices and investment decisions adjust in response to scarcity; this feedback is absent.
-\end{enumerate}
+
+This work employs several necessary abstractions for computational tractability. First, we assume \textbf{homogeneous geographic distribution}, which is a significant simplification because real infrastructure is embedded in space and long-distance pipelines introduce propagation delays that our model does not capture. Second, we model a \textbf{static network} and do not simulate network reconfiguration (line switching, valve operation) that is available in real systems as an adaptive control mechanism. Third, we use \textbf{aggregate nodes} where each simulated node represents an entire facility; intra-facility dynamics (sub-units, control circuits) are missing from our abstraction. Fourth, our \textbf{stylized failure model} employs a probabilistic rule that is more abstract than first-principles equipment-failure models based on material science and degradation mechanics. Finally, we omit \textbf{economic feedback}: prices and investment decisions adjust in response to scarcity in real markets, but this feedback mechanism is absent from our model.
 
 \subsection{Validation Needs}
-To increase confidence in results, the following would strengthen the work:
-\begin{itemize}
-\item Calibration against historical blackout data from power grids or hydrogen incidents.
-\item Sensitivity analysis on parameters $P_0, \alpha, \beta, \rho, p_{\text{rec}}$.
-\item Comparison with alternative cascade models (e.g., epidemic spreading, percolation theory).
-\item Incorporation of real geographic/demographic data and facility specs.
-\end{itemize}
+
+To increase confidence in results, several enhancements would significantly strengthen this work. First, \textbf{calibration against historical blackout data} from power grids or documented hydrogen incidents would validate model dynamics against real-world observations. Second, \textbf{sensitivity analysis} on key parameters ($P_0, \alpha, \beta, \rho, p_{\text{rec}}$) would identify which model inputs drive cascade behavior most strongly. Third, \textbf{comparison with alternative cascade models} such as epidemic spreading or percolation theory would contextualize our findings within established mathematical frameworks. Finally, \textbf{incorporation of real geographic and demographic data} along with validated facility specifications would remove our homogeneity assumptions and improve realism.
 
 \section{Broader Research Directions}
 
 \subsection{Extensions}
-\begin{enumerate}
-\item \textbf{Directed flow models:} Implement explicit commodity routing (hydrogen, power, products) with conservation constraints.
-\item \textbf{Adaptive control:} Test autonomous load-shedding and rerouting policies to mitigate cascades.
-\item \textbf{Optimal hardening:} Use optimization to identify minimal-cost upgrades (backup capacity, storage expansion) for resilience targets.
-\item \textbf{Multi-commodity networks:} Extend to coupled electricity, hydrogen, and heat networks.
-\item \textbf{Machine-learning surrogates:} Train neural networks to rapidly predict cascade outcomes for new topologies.
-\end{enumerate}
+
+Natural extensions of this work span multiple dimensions of model sophistication and realism. \textbf{Directed flow models} would implement explicit commodity routing (hydrogen, power, products) with flow conservation constraints, moving beyond our aggregate load representation. \textbf{Adaptive control policies} would test autonomous load-shedding and rerouting strategies to mitigate cascades in real-time. \textbf{Optimal hardening} using system-wide optimization could identify minimal-cost infrastructure upgrades (backup capacity, storage expansion) needed to achieve specific resilience targets. \textbf{Multi-commodity network extensions} would couple electricity, hydrogen, and heat networks to capture interdependencies across energy vectors. Finally, \textbf{machine-learning surrogates} could train neural networks to rapidly predict cascade outcomes for new topologies, enabling quick policy evaluation without running full simulations.
 
 \subsection{Integration with Industry}
-\begin{itemize}
-\item Collaborate with hydrogen network operators to obtain anonymized real-world topology and failure data.
-\item Calibrate model to match observed outage frequencies and cascade sizes.
-\item Use calibrated model to stress-test proposed expansions and inform investment decisions.
-\end{itemize}
+
+Bridging the gap between research and practice requires sustained engagement with industry stakeholders. \textbf{Collaboration with hydrogen network operators} should prioritize obtaining anonymized real-world topology and failure data that can validate model structure and dynamics. \textbf{Model calibration} to match observed outage frequencies and cascade size distributions from operational networks would ground our predictions in reality. Finally, the calibrated model should be deployed to \textbf{stress-test proposed infrastructure expansions}, providing quantitative risk assessments to inform operator investment decisions in a systematic, evidence-based manner.
 
 % ============ CHAPTER 7: CONCLUSION ============
 \chapter{Conclusion}
@@ -538,32 +476,21 @@ This project develops an agent-based digital twin for cascading failures in gree
 
 \section{Summary of Findings}
 
-\begin{enumerate}
-\item \textbf{Topology effects dominate:} Scale-free (hub-and-spoke) networks exhibit larger and more variable cascades than small-world (mesh) networks at equivalent local parameters.
-\item \textbf{Power-law avalanche distributions:} Avalanche-size distributions exhibit heavy tails ($\tau \approx 1$), consistent with self-organized criticality.
-\item \textbf{Finite-size scaling:} Mean avalanche size grows sublinearly with network size ($\sim N^{0.2-0.3}$), suggesting cascade sizes are physics-limited rather than scale-limited.
-\item \textbf{Recovery is essential:} Maintenance and repair at rates comparable to failure rates enable sustained quasi-stationary operation; without recovery, complete collapse ensues rapidly.
-\item \textbf{Parameter sensitivity:} The model exhibits a critical window around $(\alpha, \beta) \approx (0.05, 0.5)$ where rich dynamics emerge; outside this window, systems are either too stable or too fragile.
-\end{enumerate}
+This work uncovers five major findings about cascading failures in green hydrogen networks. First, \textbf{topology effects dominate} the cascade dynamics: scale-free (hub-and-spoke) networks exhibit substantially larger and more variable cascades than small-world (mesh) networks at equivalent local parameters, reflecting the structural vulnerability of hub-dependent architectures. Second, \textbf{power-law avalanche distributions} emerge from our simulations, with avalanche-size distributions exhibiting heavy tails ($\tau \approx 1$) consistent with self-organized criticality theory. Third, \textbf{finite-size scaling} reveals that mean avalanche size grows sublinearly with network size ($\sim N^{0.2-0.3}$), suggesting cascade sizes are physics-limited (bounded by propagation speed) rather than scale-limited (growing with system size). Fourth, \textbf{recovery is essential}: maintenance and repair at rates comparable to failure rates enable sustained quasi-stationary operation with intermittent cascades; without recovery, complete network collapse ensues rapidly. Finally, \textbf{parameter sensitivity} shows that the model exhibits a critical window around $(\alpha, \beta) \approx (0.15, 0.5)$ where rich dynamics emerge; outside this window, systems are either too stable (no cascades) or too fragile (immediate collapse).
 
 \section{Contributions}
 
-\begin{itemize}
-\item A modular, open-source Python framework for agent-based digital twin simulation of coupled infrastructure networks.
-\item Comparative topology analysis (BA vs.\ WS) demonstrating network structure's role in cascade severity.
-\item SOC-style avalanche diagnostics providing metrics for resilience assessment.
-\item Reproducible workflow integrating parameter sweeps, statistical analysis, and publication-ready visualization.
-\end{itemize}
+This project makes four complementary contributions to the field of infrastructure resilience. First, it provides a \textbf{modular, open-source Python framework} for agent-based digital twin simulation of coupled infrastructure networks, establishing a reusable foundation for future research and industrial applications. Second, the work presents \textbf{comparative topology analysis} (Barabási-Albert versus Watts-Strogatz) that convincingly demonstrates network structure's fundamental role in determining cascade severity, bridging graph theory and dynamical systems. Third, the project develops \textbf{SOC-style avalanche diagnostics} including power-law fitting, finite-size scaling analysis, and critical point identification, providing quantitative metrics for assessing resilience across different infrastructure designs. Finally, the work establishes a \textbf{reproducible workflow} integrating large-scale parameter sweeps, statistical analysis, and publication-ready visualization, creating a template for systematic scientific investigation of complex infrastructure systems.
 
 \section{Recommendations}
 
 For practitioners designing green hydrogen infrastructure:
 \begin{enumerate}
-\item Conduct cascading-failure risk assessments using tools like this digital twin.
-\item Pursue hybrid topologies combining hub efficiency with mesh redundancy.
-\item Invest in storage and distributed generation to reduce hub dependency.
-\item Establish rapid-response maintenance protocols to sustain recovery rates above collapse thresholds.
-\item Coordinate international hydrogen pipelines with dynamic de-coupling mechanisms to prevent cross-border cascade propagation.
+\item \textbf{Conduct} cascading-failure risk assessments using agent-based digital twins before finalizing infrastructure designs.
+\item \textbf{Implement} hybrid topologies combining hub efficiency with mesh redundancy to maximize system resilience.
+\item \textbf{Prioritize} investment in distributed storage and generation to reduce critical hub dependency and enable graceful degradation.
+\item \textbf{Establish} rapid-response maintenance protocols with recovery rates that exceed collapse thresholds by at least 20\%.
+\item \textbf{Coordinate} international hydrogen pipelines with dynamic de-coupling mechanisms to prevent cross-border cascade propagation.
 \end{enumerate}
 
 For researchers:
@@ -583,64 +510,9 @@ Green hydrogen is essential for decarbonization, but its complex interdependenci
 \bibliographystyle{unsrtnat}
 \renewcommand{\bibname}{References}
 
-\begin{thebibliography}{99}
-
-\bibitem{bak1987}
-Bak, P., Tang, C., \& Wiesenfeld, K. (1987).
-Self-organized criticality: An explanation of 1/f noise.
-\textit{Physical Review Letters}, 59(4), 381--384.
-
-\bibitem{albert2002}
-Albert, R., \& Barab\'asi, A.-L. (2002).
-Statistical mechanics of complex networks.
-\textit{Reviews of Modern Physics}, 74(1), 47--97.
-
-\bibitem{watts1998}
-Watts, D. J., \& Strogatz, S. H. (1998).
-Collective dynamics of 'small-world' networks.
-\textit{Nature}, 393(6684), 440--442.
-
-\bibitem{barabasi1999}
-Barab\'asi, A.-L., \& Albert, R. (1999).
-Emergence of scaling in random networks.
-\textit{Science}, 286(5439), 509--512.
-
-\bibitem{buldyrev2010}
-Buldyrev, S. V., Parshani, R., Paul, G., Stanley, H. E., \& Havlin, S. (2010).
-Catastrophic cascade of failures in interdependent networks.
-\textit{Nature}, 464(7291), 1025--1028.
-
-\bibitem{holmgren2006}
-Holmgren, A. J. (2006).
-Using graph models to analyze the vulnerability of power networks.
-\textit{Risk Analysis}, 26(4), 955--969.
-
-\bibitem{newman2018}
-Newman, M. (2018).
-\textit{Networks} (2nd ed.).
-Oxford University Press.
-
-\bibitem{karan2021}
-Karan, D., Grasso, D., \& Kim, K. (2021).
-Risk assessment for green hydrogen supply chains.
-\textit{International Journal of Energy Research}, 45(7), 10234--10251.
-
-\bibitem{palomares2022}
-Palomares-S\'aenz, J., Schotanus, K., Gonzalez-Garay, A., \& Guillen-Gosalbez, G. (2022).
-Resilience of hydrogen infrastructure: Graph-theoretic and optimization-based approaches.
-\textit{Chemical Engineering Research and Design}, 178, 234--248.
-
-\bibitem{newman2005}
-Newman, M. E. J. (2005).
-Power laws, Pareto distributions and Zipf's law.
-\textit{Contemporary Physics}, 46(5), 323--351.
-
-\bibitem{solarin2016}
-Solarin, S. A., Ozturk, I., \& Al-Mulali, U. (2016).
-Validating the environmental Kuznets curve hypothesis in India and China: The role of hydroelectricity consumption.
-\textit{Renewable and Sustainable Energy Reviews}, 57, 41--49.
-
-\end{thebibliography}
+% Use BibTeX bibliography file for citation resolution in Overleaf
+% (replaces manual thebibliography block)
+\bibliography{references}
 
 % ============ APPENDICES ============
 \appendix

@@ -20,7 +20,7 @@ class NodeAgent:
     - stress: normalized stress metric (0..1)
     - health: remaining health (0..1); 0 means fully failed
     - failed: boolean failure state
-    - degradation: long-term degradation multiplier that slowly reduces capacity
+    - degradation: long-term degradation multiplier that slowly reduces capacity via d_i(t+1)=min(d_i(t)+r_degrad*S_i(t), 0.99)
     """
 
     def __init__(self, id: int, node_type: str, capacity: float, initial_load: float = 0.0):
@@ -46,8 +46,11 @@ class NodeAgent:
         return self.stress
 
     def apply_degradation(self, delta: float):
-        """Increase degradation (bounded 0..0.95)."""
-        self.degradation = min(0.95, max(0.0, self.degradation + float(delta)))
+        """Increase degradation according to d_i(t+1)=min(d_i(t)+delta, 0.99).
+
+        In the simulation, delta = r_degrad * S_i(t).
+        """
+        self.degradation = min(0.99, max(0.0, self.degradation + float(delta)))
 
     def fail(self):
         """Set node to failed state. Reduce health and mark failed."""

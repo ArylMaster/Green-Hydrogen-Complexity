@@ -11,6 +11,8 @@ import csv
 from statistics import mean
 from typing import List, Dict
 
+from run_demo import T_SIM
+
 from .simulation import Simulation
 from .visualization import plot_stress_heatmap, plot_node_state_evolution, plot_network_state
 
@@ -22,7 +24,7 @@ def run_single(alpha: float, beta: float, topology: str, run_id: int, out_root: 
     sim = Simulation(n_nodes=120, topology=topology, seed=42 + run_id, results_dir=out_dir)
     sim.alpha = alpha
     sim.beta = beta
-    sim.run(steps=120, snapshot_interval=4)
+    sim.run(steps=T_SIM, snapshot_interval=4)
 
     # compute summary metrics
     avals = [a["size"] for a in sim.avalanches]
@@ -60,7 +62,7 @@ def sweep(out_root: str = "results/sweeps"):
     results: List[Dict] = []
     run_id = 0
     for alpha, beta, topo in combos:
-        for r in range(2):
+        for r in range(10):
             run_id += 1
             print(f"Running sweep: alpha={alpha} beta={beta} topo={topo} run={r}")
             metrics = run_single(alpha, beta, topo, r, out_root)

@@ -13,7 +13,7 @@ from .agents import NodeAgent, node_type_capacity
 from .network_generation import generate_topology, assign_node_types, extract_agents_from_graph
 from .visualization import plot_network_state, make_animation
 from .analysis import analyze_avalanches, plot_failure_fraction
-from .utils import ensure_dirs, save_json
+from .utils import ensure_dirs, save_json, write_model_equations_summary
 
 
 class Simulation:
@@ -93,8 +93,8 @@ class Simulation:
                 demand = abs(np.random.normal(loc=0.5 * agent.capacity, scale=0.2 * agent.capacity))
                 agent.load = demand
 
-            # random small degradation
-            agent.apply_degradation(np.random.normal(loc=0.0, scale=0.0002))
+            # degradation now tracks local stress rather than independent noise
+            agent.apply_degradation(self.degradation_rate * agent.stress)
             agent.update_stress()
 
         # compute initial failures by probabilistic check
@@ -174,6 +174,7 @@ class Simulation:
         # generate analysis and plots
         analyze_avalanches(self.avalanches, os.path.join(self.results_dir, "plots"))
         plot_failure_fraction(self.failure_time_series, os.path.join(self.results_dir, "plots", "failure_fraction.png"))
+        write_model_equations_summary(os.path.join(self.results_dir, "model_equations.txt"))
 
         # assemble animation
         gif_path = os.path.join(self.results_dir, "animations", "cascading_failures.gif")
@@ -185,5 +186,7 @@ class Simulation:
 
 
 if __name__ == "__main__":
+    from run_demo import T_SIM
+
     sim = Simulation(n_nodes=120, topology="barabasi", seed=42, results_dir=os.path.join(os.getcwd(), "green_results"))
-    sim.run(steps=160, snapshot_interval=2)
+    sim.run(steps=T_SIM, snapshot_interval=2)
