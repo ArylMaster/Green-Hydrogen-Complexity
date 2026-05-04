@@ -37,6 +37,7 @@
 \thispagestyle{empty}
 \vspace*{0.3cm}
 \begin{center}
+\includegraphics[width=3.2cm]{Indian_Institute_of_Technology_Delhi_Logo.png}\\[0.35cm]
 {\large \textbf{INDIAN INSTITUTE OF TECHNOLOGY DELHI}}\\
 \vspace{0.15cm}
 {\normalsize Department of Chemical Engineering}\\
@@ -183,6 +184,59 @@ $d_i(t)$ & $\in [0,1)$ & Cumulative degradation factor \\
 \bottomrule
 \end{tabularx}
 \end{table}
+
+\subsection{Agent Definition}
+
+Each simulated unit in the network is implemented as an autonomous node-level agent. Agents are lightweight state machines that encapsulate (i) an immutable identity and type (producer, consumer, storage, transport), (ii) time-varying operational state (load, stress, health, failure flag), and (iii) local parameters that control dynamics (nominal capacity, degradation rate, recovery probability). Agent behavior is entirely local: at each timestep an agent updates its load (exogenous sampling or generation), computes local stress and degradation, evaluates stochastic failure, and—if failed—becomes a source of redistributed load for its neighbors. This bottom-up design allows global cascade properties to emerge from simple, locally-enforced rules.
+
+\begin{table}[htbp]
+\centering
+\caption{Agent Types and Roles}
+\begin{tabularx}{0.8\textwidth}{p{3.5cm} X}
+\toprule
+\textbf{Agent Type} & \textbf{Role / Typical Behavior} \\
+\midrule
+Generation (solar/wind) & Stochastic power producer; intermittently supplies negative load (generation)\\
+Electrolyzer & Converter: consumes electrical input to produce hydrogen; load-sensitive and capacity-constrained\\
+Storage (tank) & Buffer: absorbs/supplies energy across timesteps according to state-of-charge rules\\
+Process plant (ammonia) & Consumer: relatively steady demand representing downstream synthesis\\
+Pipeline hub & Transport node: routes transferable load to neighbors, mediates redistribution\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Environment}
+
+Simulations are executed on static network topologies (Barab\'asi--Albert and Watts--Strogatz variants) that define the adjacency relations through which load and failures propagate. External forcing is applied via stochastic sampling of generation and demand each timestep (Gaussian noise with standard deviation $\sigma_{\text{noise}}$ around nominal profiles). The simulation horizon is denoted $T_{\text{sim}}$ (set as 'T\_SIM' in the codebase) and we run multiple independent replicates with different random seeds to estimate ensemble statistics. Topology, agent-type assignment, and capacity heterogeneity together form the environment that shapes local interactions and emergent cascade statistics.
+
+\subsection{Local Rules}
+
+The model enforces the following local update rules at each timestep for every non-failed agent:
+\begin{enumerate}
+\item Sample or update local load $L_i(t)$ according to agent type (renewable generation draws, consumer demand draws, storage charge/discharge logic).
+\item Compute normalized stress $S_i(t)$ via Eq.~\eqref{eq:stress} using current effective capacity $C_i(1-d_i(t))$.
+\item Advance degradation $d_i(t)$ with the stress-coupled update in Eq.~\eqref{eq:degradation}.
+\item Compute failure probability $P_{\text{fail},i}$ from Eq.~\eqref{eq:failure_prob} and trigger stochastic failure when a uniform draw is below this threshold.
+\item If a node fails, mark it as failed and redistribute fraction $\rho$ of its transferable load to non-failed neighbors according to Eq.~\eqref{eq:load_redist}; neighbor stresses are updated immediately and may enter the cascade queue.
+\item Failed nodes recover stochastically with probability $p_{\text{rec}}$ per timestep and, when repaired, resume operation with health restored by factor $r_{\text{health}}$.
+\end{enumerate}
+
+Below is concise pseudocode for the per-timestep agent loop (cascade propagation handled via a queue):
+\begin{verbatim}
+for t in 1..T_sim:
+	for each agent i (non-failed):
+		update L_i(t)
+		S_i = stress(L_i, C_i, d_i)
+		d_i += r_degrad * S_i
+		if rand() < P_fail(i): enqueue(i)
+	while queue not empty:
+		j = dequeue()
+		mark j failed; redistribute rho*L_j to neighbors
+		for neighbor k: recompute S_k and possibly enqueue(k)
+	for failed i: if rand() < p_rec: repair(i)
+	record avalanche/metrics
+\end{verbatim}
+
 
 \section{Failure Probability Model}
 
@@ -508,6 +562,12 @@ Green hydrogen is essential for decarbonization, but its complex interdependenci
 % ============ REFERENCES ============
 \newpage
 \bibliographystyle{unsrtnat}
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+The author gratefully acknowledges the guidance of Prof. Rajesh Khanna and helpful feedback from peers in the Department of Chemical Engineering. Portions of the drafting, debugging, and formatting workflow benefited from interactive assistance provided by language-model based developer tools; the author retains responsibility for all scientific content, analyses, and conclusions presented in this manuscript. Any code and figures generated by automated tools were reviewed and verified by the author prior to inclusion.
+
+% References and bibliography
 \renewcommand{\bibname}{References}
 
 % Use BibTeX bibliography file for citation resolution in Overleaf
@@ -532,5 +592,24 @@ To reproduce results:
 \item Run research pipeline: \texttt{python -m src.research\_pipeline}
 \item Outputs appear in \texttt{results/research/plots/} and \texttt{results/research/data/}
 \end{enumerate}
+
+\chapter{Prompts and AI Assistance}
+
+For transparency and reproducibility, the prompts and short, purposeful instructions used during development and revision are recorded in the repository at \texttt{PROMPTS.md}. Below we provide a concise selection of the high-level prompts used during the project:
+
+\begin{itemize}
+\item "Derive a mean-field approximation for the stress-coupled failure model and identify the parameter regime where contagion dominates recovery."
+\item "Explain how the degradation update $d_i(t+1)=\min(d_i(t)+r_{\text{degrad}}S_i(t),0.99)$ changes cascade persistence compared with a purely time-based degradation law."
+\item "Design a minimal parameter-sweep strategy to locate the critical manifold in $(\alpha,\beta)$ space using the fewest simulation runs while preserving statistical confidence."
+\item "Propose a validation protocol for avalanche statistics that combines bootstrap confidence intervals, alternative heavy-tail models, and goodness-of-fit checks."
+\item "Formulate an interpretation of why Barab\'asi--Albert topologies produce larger avalanche variance than Watts--Strogatz topologies under identical local rules."
+\item "Specify the minimum metadata needed for exact replayability of the simulation pipeline, including seeds, topology parameters, and per-run outputs."
+\item "Suggest three physically meaningful intervention strategies in the network model that could lower mean avalanche size without artificially suppressing stochasticity."
+\item "Write a concise derivation connecting local stress accumulation, load redistribution, and avalanche duration in the agent-based model."
+\item "Identify which model observables should be logged to compare simulated cascades against future real-world hydrogen or grid outage datasets."
+\item "Draft a short technical rationale for why the chosen recovery probability is sufficient to produce a quasi-stationary regime rather than permanent collapse."
+\end{itemize}
+
+The full sequence of prompts (including iterative developer instructions and debugging queries) is archived in \texttt{PROMPTS.md} at the repository root to support reproducibility and review.
 
 \end{document}
